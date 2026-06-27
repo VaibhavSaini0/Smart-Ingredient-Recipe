@@ -2,7 +2,7 @@
 
 Expo React Native app for the **Smart Ingredient Recipe** project. Enter ingredients you have at home, generate AI-powered recipes, follow step-by-step cooking instructions with timers, and browse your saved recipe history.
 
-Pairs with the backend API in [`smart-ingredient-recipe-backend`](../smart-ingredient-recipe-backend/).
+Pairs with the backend API in [`smart-ingredient-recipe-backend`](https://github.com/VaibhavSaini0/Smart-Ingredient-Recipe).
 
 ---
 
@@ -34,7 +34,7 @@ Pairs with the backend API in [`smart-ingredient-recipe-backend`](../smart-ingre
 ## Prerequisites
 
 - **Node.js** 20+
-- **Backend API** running — see [backend README](../smart-ingredient-recipe-backend/README.md)
+- **Backend API** running — see [backend README](https://github.com/VaibhavSaini0/Smart-Ingredient-Recipe/README.md)
 - **Expo Go** (SDK 54) on your phone, or Android/iOS emulator
 
 ---
