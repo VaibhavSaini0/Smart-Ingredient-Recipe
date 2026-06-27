@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 3,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: colors.muted,
   },
   progressFill: {
     height: '100%',

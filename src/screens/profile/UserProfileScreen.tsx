@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: radius.full,
-    backgroundColor: '#FFF4E6',
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.md,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   tipCard: {
     flexDirection: 'row',
     gap: spacing.md,
-    backgroundColor: '#E8F5E9',
+    backgroundColor: colors.secondaryLight,
     padding: spacing.md,
     borderRadius: radius.md,
     alignItems: 'flex-start',

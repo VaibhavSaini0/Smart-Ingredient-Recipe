@@ -30,8 +30,8 @@ export class ErrorBoundary extends Component<Props, State> {
         <View style={styles.container}>
           <Text style={styles.title}>Something went wrong</Text>
           <Text style={styles.message}>
-            Please restart the app. If the problem continues, check your API
-            connection in Settings.
+            Try again. If it keeps happening, restart Expo and check that the
+            backend URL in .env is correct.
           </Text>
           <Button
             label="Try Again"

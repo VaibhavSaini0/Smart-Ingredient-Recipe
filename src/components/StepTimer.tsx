@@ -82,7 +82,7 @@ export function StepTimer({
           <Ionicons name="alarm-outline" size={22} color={colors.primary} />
           <Text style={styles.completeTitle}>Timer finished!</Text>
           <Text style={styles.completeSubtitle}>
-            Tap Stop Timer to silence the alert and continue cooking.
+            Tap Stop when you are ready to move on.
           </Text>
         </View>
       ) : (
@@ -132,18 +132,18 @@ export function StepTimer({
 const styles = StyleSheet.create({
   container: {
     marginTop: spacing.md,
-    backgroundColor: '#FFF4E6',
+    backgroundColor: colors.primaryLight,
     borderRadius: radius.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: '#FFD8A8',
+    borderColor: colors.primaryBorder,
   },
   containerAlert: {
     borderColor: colors.primary,
   },
   finishedContainer: {
-    backgroundColor: '#ECFDF5',
-    borderColor: '#A7F3D0',
+    backgroundColor: colors.successBg,
+    borderColor: colors.successBorder,
   },
   finishedRow: {
     flexDirection: 'row',
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 6,
-    backgroundColor: '#FFE8CC',
+    backgroundColor: colors.primaryTrack,
     borderRadius: radius.full,
     overflow: 'hidden',
     marginBottom: spacing.md,

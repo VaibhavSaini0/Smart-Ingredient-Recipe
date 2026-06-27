@@ -59,10 +59,7 @@ export async function apiRequest<T>(
     if (error instanceof Error && error.name === 'AbortError') {
       throw new ApiError('Request timed out. Please try again.', 0);
     }
-    throw new ApiError(
-      'Cannot reach server. Check your connection and that the backend is running.',
-      0,
-    );
+    throw new ApiError("Can't reach the server. Check your connection.", 0);
   } finally {
     clearTimeout(timeoutId);
   }

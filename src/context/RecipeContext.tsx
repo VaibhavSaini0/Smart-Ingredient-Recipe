@@ -108,10 +108,8 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     (session: ActiveFollowSession | null, timer: TimerState | null) => {
       if (!isTimerBlocking(session, timer)) return false;
 
-      Alert.alert(
-        'Timer in progress',
-        timerBlockingMessage(timer),
-      );
+      // Don't let users skip steps while a timer is still running
+      Alert.alert('Timer in progress', timerBlockingMessage(timer));
       return true;
     },
     [],
@@ -137,7 +135,7 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
         message = error.message;
       } else if (error instanceof Error) {
         message = error.message.includes('Network')
-          ? 'Cannot reach server. Check that the backend is running and API URL is correct.'
+          ? "Can't reach the server. Check your connection and API URL."
           : error.message;
       }
 
@@ -251,39 +249,31 @@ export function RecipeProvider({ children }: { children: React.ReactNode }) {
     clearTimer();
   };
 
-  const value = useMemo(
-    () => ({
-      latestRecipe,
-      isGenerating,
-      generateError,
-      followSession,
-      activeTimer,
-      timerBlockingNavigation,
-      generateRecipe,
-      startFollowing,
-      stopFollowing,
-      goToStep,
-      nextStep,
-      prevStep,
-      startTimer,
-      pauseTimer,
-      resumeTimer,
-      cancelTimer,
-      stopCompletedTimer,
-      openRecipe,
-    }),
-    [
-      latestRecipe,
-      isGenerating,
-      generateError,
-      followSession,
-      activeTimer,
-      timerBlockingNavigation,
-    ],
-  );
-
   return (
-    <RecipeContext.Provider value={value}>{children}</RecipeContext.Provider>
+    <RecipeContext.Provider
+      value={{
+        latestRecipe,
+        isGenerating,
+        generateError,
+        followSession,
+        activeTimer,
+        timerBlockingNavigation,
+        generateRecipe,
+        startFollowing,
+        stopFollowing,
+        goToStep,
+        nextStep,
+        prevStep,
+        startTimer,
+        pauseTimer,
+        resumeTimer,
+        cancelTimer,
+        stopCompletedTimer,
+        openRecipe,
+      }}
+    >
+      {children}
+    </RecipeContext.Provider>
   );
 }
 

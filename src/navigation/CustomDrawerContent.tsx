@@ -57,7 +57,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             focused={activeRoute === item.name}
             activeTintColor={colors.primary}
             inactiveTintColor={colors.text}
-            activeBackgroundColor="#FFF4E6"
+            activeBackgroundColor={colors.primaryLight}
             icon={({ color, size }) => (
               <Ionicons name={item.icon} size={size} color={color} />
             )}
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: radius.full,
-    backgroundColor: '#FFF4E6',
+    backgroundColor: colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.sm,

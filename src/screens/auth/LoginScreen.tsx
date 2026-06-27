@@ -55,19 +55,19 @@ export function LoginScreen({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <LinearGradient colors={['#E85D04', '#F48C06']} style={styles.hero}>
+          <LinearGradient colors={[colors.primary, colors.primaryGradientEnd]} style={styles.hero}>
             <View style={styles.logoCircle}>
               <Ionicons name="restaurant" size={36} color={colors.primary} />
             </View>
             <Text style={styles.brand}>Smart Ingredient</Text>
             <Text style={styles.tagline}>
-              Turn what you have into something delicious
+              Cook with what you already have
             </Text>
           </LinearGradient>
 
           <View style={styles.form}>
             <Text style={styles.heading}>Welcome back</Text>
-            <Text style={styles.subheading}>Sign in to start cooking smarter</Text>
+            <Text style={styles.subheading}>Sign in to your account</Text>
 
             {errors.form ? (
               <View style={styles.formError}>
@@ -197,11 +197,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorBg,
     padding: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.errorBorder,
   },
   formErrorText: {
     flex: 1,

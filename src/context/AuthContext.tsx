@@ -2,7 +2,6 @@ import React, {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import {
@@ -81,10 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
-  const value = useMemo(
-    () => ({ user, isLoading, isBootstrapping, login, signup, logout }),
-    [user, isLoading, isBootstrapping],
-  );
+  const value = { user, isLoading, isBootstrapping, login, signup, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

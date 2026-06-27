@@ -67,7 +67,7 @@ export function SignupScreen({ navigation }: Props) {
             </Pressable>
             <Text style={styles.heading}>Create account</Text>
             <Text style={styles.subheading}>
-              Join Smart Ingredient and never waste food again
+              Sign up to save recipes to your account
             </Text>
           </View>
 
@@ -199,11 +199,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorBg,
     padding: spacing.md,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: '#FECACA',
+    borderColor: colors.errorBorder,
   },
   formErrorText: {
     flex: 1,

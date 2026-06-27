@@ -84,7 +84,7 @@ export function HomeScreen({ navigation }: Props) {
           />
         </View>
 
-        <Text style={styles.suggestionsTitle}>Quick try</Text>
+        <Text style={styles.suggestionsTitle}>Examples</Text>
         <View style={styles.chips}>
           {SUGGESTIONS.map((item) => (
             <Pressable
@@ -98,12 +98,11 @@ export function HomeScreen({ navigation }: Props) {
         </View>
 
         <View style={styles.infoCard}>
-          <Ionicons name="sparkles" size={20} color={colors.secondary} />
+          <Ionicons name="bookmark-outline" size={20} color={colors.secondary} />
           <View style={styles.infoContent}>
-            <Text style={styles.infoTitle}>Powered by Google Gemini</Text>
+            <Text style={styles.infoTitle}>Saved to your account</Text>
             <Text style={styles.infoText}>
-              Recipes are generated with AI and saved to your account. Open the
-              menu to view history or your profile.
+              Generated recipes show up in Recipe History from the side menu.
             </Text>
           </View>
         </View>
@@ -173,7 +172,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: colors.errorBg,
     padding: spacing.md,
     borderRadius: radius.md,
   },
@@ -204,7 +203,7 @@ const styles = StyleSheet.create({
   infoCard: {
     flexDirection: 'row',
     gap: spacing.md,
-    backgroundColor: '#E8F5E9',
+    backgroundColor: colors.secondaryLight,
     padding: spacing.md,
     borderRadius: radius.md,
     alignItems: 'flex-start',

@@ -2,14 +2,24 @@ import { Platform, ViewStyle } from 'react-native';
 
 export const colors = {
   primary: '#E85D04',
+  primaryLight: '#FFF4E6',
+  primaryBorder: '#FFD8A8',
+  primaryGradientEnd: '#F48C06',
+  primaryTrack: '#FFE8CC',
   secondary: '#2D6A4F',
+  secondaryLight: '#E8F5E9',
   background: '#FFF8F0',
   surface: '#FFFFFF',
+  muted: '#F3F4F6',
   text: '#1A1A2E',
   textMuted: '#6B7280',
   border: '#E5E7EB',
   error: '#DC2626',
+  errorBg: '#FEF2F2',
+  errorBorder: '#FECACA',
   success: '#16A34A',
+  successBg: '#ECFDF5',
+  successBorder: '#A7F3D0',
 };
 
 export const spacing = {

@@ -66,7 +66,7 @@ export function FollowRecipeScreen({ navigation }: Props) {
       return;
     }
 
-    Alert.alert('Recipe complete! 🎉', 'Hope you enjoyed your meal!', [
+    Alert.alert('All done', 'Nice work — back to home?', [
       {
         text: 'Done',
         onPress: () => {
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     borderRadius: radius.full,
     overflow: 'hidden',
   },
@@ -385,7 +385,7 @@ const styles = StyleSheet.create({
   },
   stepListItemActive: {
     borderColor: colors.primary,
-    backgroundColor: '#FFF4E6',
+    backgroundColor: colors.primaryLight,
   },
   stepListItemDone: {
     opacity: 0.7,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: radius.full,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
