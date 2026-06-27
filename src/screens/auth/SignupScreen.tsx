@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -11,29 +10,43 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Button } from '../components/Button';
-import { Input } from '../components/Input';
-import { ScreenWrapper } from '../components/ScreenWrapper';
-import { colors, radius, spacing } from '../constants/theme';
-import { useAuth } from '../context/AuthContext';
-import { RootStackParamList } from '../navigation/types';
+import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
+import { ScreenWrapper } from '../../components/ScreenWrapper';
+import { colors, radius, spacing } from '../../constants/theme';
+import { useAuth } from '../../context/AuthContext';
+import { AuthStackParamList } from '../../navigation/types';
+import { FieldErrors, validateSignupForm } from '../../utils/validation';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Signup'>;
+type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
 export function SignupScreen({ navigation }: Props) {
   const { signup, isLoading } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+  });
+
+  const runValidation = (n = name, e = email, p = password) => validateSignupForm(n, e, p);
 
   const handleSignup = async () => {
+    const validation = runValidation();
+    setErrors(validation);
+    setTouched({ name: true, email: true, password: true });
+
+    if (Object.keys(validation).length > 0) return;
+
     try {
       await signup(name, email, password);
     } catch (error) {
-      Alert.alert(
-        'Sign up failed',
-        error instanceof Error ? error.message : 'Please try again.',
-      );
+      setErrors({
+        form: error instanceof Error ? error.message : 'Sign up failed. Please try again.',
+      });
     }
   };
 
@@ -59,35 +72,77 @@ export function SignupScreen({ navigation }: Props) {
           </View>
 
           <View style={styles.form}>
+            {errors.form ? (
+              <View style={styles.formError}>
+                <Ionicons name="alert-circle" size={18} color={colors.error} />
+                <Text style={styles.formErrorText}>{errors.form}</Text>
+              </View>
+            ) : null}
+
             <Input
               label="Full name"
               value={name}
-              onChangeText={setName}
+              onChangeText={(text) => {
+                setName(text);
+                if (touched.name) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    name: runValidation(text, email, password).name,
+                    form: undefined,
+                  }));
+                }
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, name: true }));
+                setErrors((prev) => ({ ...prev, name: runValidation().name }));
+              }}
               placeholder="Your name"
               autoCapitalize="words"
+              error={touched.name ? errors.name : undefined}
             />
             <Input
               label="Email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (touched.email) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    email: runValidation(name, text, password).email,
+                    form: undefined,
+                  }));
+                }
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, email: true }));
+                setErrors((prev) => ({ ...prev, email: runValidation().email }));
+              }}
               placeholder="you@example.com"
               keyboardType="email-address"
               autoCapitalize="none"
+              error={touched.email ? errors.email : undefined}
             />
             <Input
               label="Password"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (touched.password) {
+                  setErrors((prev) => ({
+                    ...prev,
+                    password: runValidation(name, email, text).password,
+                    form: undefined,
+                  }));
+                }
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, password: true }));
+                setErrors((prev) => ({ ...prev, password: runValidation().password }));
+              }}
               placeholder="At least 6 characters"
               secureTextEntry
+              error={touched.password ? errors.password : undefined}
             />
-
-            <View style={styles.tip}>
-              <Ionicons name="bulb-outline" size={18} color={colors.secondary} />
-              <Text style={styles.tipText}>
-                Tip: Use any email/password for this demo — backend comes next!
-              </Text>
-            </View>
 
             <Button
               label="Create Account"
@@ -140,19 +195,21 @@ const styles = StyleSheet.create({
   form: {
     gap: spacing.md,
   },
-  tip: {
+  formError: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: spacing.sm,
-    backgroundColor: '#E8F5E9',
+    backgroundColor: '#FEF2F2',
     padding: spacing.md,
     borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: '#FECACA',
   },
-  tipText: {
+  formErrorText: {
     flex: 1,
-    fontSize: 13,
-    color: colors.secondary,
-    lineHeight: 18,
+    color: colors.error,
+    fontSize: 14,
+    lineHeight: 20,
   },
   submit: {
     marginTop: spacing.sm,

@@ -1,6 +1,20 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  getMeApi,
+  loginApi,
+  logoutApi,
+  signupApi,
+} from '../api/auth';
+import { ApiError } from '../api/client';
 
-interface User {
+export interface User {
+  id: string;
   name: string;
   email: string;
 }
@@ -8,56 +22,68 @@ interface User {
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
+  isBootstrapping: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function toAuthError(error: unknown): Error {
+  if (error instanceof ApiError) {
+    return new Error(error.message);
+  }
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error('Something went wrong. Please try again.');
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBootstrapping, setIsBootstrapping] = useState(true);
+
+  useEffect(() => {
+    getMeApi()
+      .then((restored) => setUser(restored))
+      .catch(() => setUser(null))
+      .finally(() => setIsBootstrapping(false));
+  }, []);
 
   const login = async (email: string, password: string) => {
-    if (!email.trim() || !password.trim()) {
-      throw new Error('Email and password are required.');
-    }
-
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    setUser({
-      name: email.split('@')[0] || 'Chef',
-      email: email.trim().toLowerCase(),
-    });
-    setIsLoading(false);
+    try {
+      const data = await loginApi(email.trim(), password);
+      setUser(data.user);
+    } catch (error) {
+      throw toAuthError(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      throw new Error('All fields are required.');
-    }
-
-    if (password.length < 6) {
-      throw new Error('Password must be at least 6 characters.');
-    }
-
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setUser({
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-    });
-    setIsLoading(false);
+    try {
+      const data = await signupApi(name.trim(), email.trim(), password);
+      setUser(data.user);
+    } catch (error) {
+      throw toAuthError(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const logout = () => setUser(null);
+  const logout = async () => {
+    await logoutApi();
+    setUser(null);
+  };
 
   const value = useMemo(
-    () => ({ user, isLoading, login, signup, logout }),
-    [user, isLoading],
+    () => ({ user, isLoading, isBootstrapping, login, signup, logout }),
+    [user, isLoading, isBootstrapping],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

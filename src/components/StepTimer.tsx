@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, radius, spacing } from '../constants/theme';
+import { formatTime } from '../utils/formatTime';
 import { Button } from './Button';
 
 interface StepTimerProps {
@@ -11,15 +12,13 @@ interface StepTimerProps {
   remainingSeconds?: number;
   totalSeconds?: number;
   isRunning?: boolean;
+  awaitingStop?: boolean;
+  stepTimerFinished?: boolean;
   onStart: () => void;
   onPause: () => void;
-  onReset: () => void;
-}
-
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
+  onResume: () => void;
+  onCancel: () => void;
+  onStop: () => void;
 }
 
 export function StepTimer({
@@ -29,40 +28,102 @@ export function StepTimer({
   remainingSeconds,
   totalSeconds,
   isRunning,
+  awaitingStop,
+  stepTimerFinished,
   onStart,
   onPause,
-  onReset,
+  onResume,
+  onCancel,
+  onStop,
 }: StepTimerProps) {
   const isActive = activeStepId === stepId;
-  const displaySeconds = isActive && remainingSeconds !== undefined
-    ? remainingSeconds
-    : minutes * 60;
-  const progress = isActive && totalSeconds
-    ? 1 - displaySeconds / totalSeconds
-    : 0;
+  const isPaused =
+    isActive &&
+    !isRunning &&
+    !awaitingStop &&
+    remainingSeconds !== undefined &&
+    totalSeconds !== undefined &&
+    remainingSeconds > 0 &&
+    remainingSeconds < totalSeconds;
+
+  const displaySeconds =
+    isActive && remainingSeconds !== undefined
+      ? remainingSeconds
+      : minutes * 60;
+
+  const progress =
+    isActive && totalSeconds
+      ? 1 - displaySeconds / totalSeconds
+      : stepTimerFinished
+        ? 1
+        : 0;
+
+  if (stepTimerFinished && !isActive) {
+    return (
+      <View style={[styles.container, styles.finishedContainer]}>
+        <View style={styles.finishedRow}>
+          <Ionicons name="checkmark-circle" size={20} color={colors.success} />
+          <Text style={styles.finishedText}>Step timer completed</Text>
+        </View>
+        <Button
+          label="Restart Timer"
+          onPress={onStart}
+          variant="outline"
+          style={styles.restartBtn}
+        />
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Ionicons name="timer-outline" size={18} color={colors.primary} />
-        <Text style={styles.title}>Step timer · {minutes} min</Text>
-      </View>
+    <View style={[styles.container, awaitingStop && isActive && styles.containerAlert]}>
+      {awaitingStop && isActive ? (
+        <View style={styles.completeBanner}>
+          <Ionicons name="alarm-outline" size={22} color={colors.primary} />
+          <Text style={styles.completeTitle}>Timer finished!</Text>
+          <Text style={styles.completeSubtitle}>
+            Tap Stop Timer to silence the alert and continue cooking.
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.header}>
+          <Ionicons name="timer-outline" size={18} color={colors.primary} />
+          <Text style={styles.title}>Step timer · {minutes} min</Text>
+        </View>
+      )}
 
-      <Text style={styles.time}>{formatTime(displaySeconds)}</Text>
+      <Text style={[styles.time, awaitingStop && isActive && styles.timeAlert]}>
+        {formatTime(displaySeconds)}
+      </Text>
 
       <View style={styles.progressTrack}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` }]} />
+        <View
+          style={[
+            styles.progressFill,
+            { width: `${Math.min(progress * 100, 100)}%` },
+            (awaitingStop && isActive) || stepTimerFinished
+              ? styles.progressFillDone
+              : null,
+          ]}
+        />
       </View>
 
       <View style={styles.actions}>
-        {isActive && isRunning ? (
-          <Button label="Pause" onPress={onPause} variant="outline" style={styles.actionBtn} />
+        {awaitingStop && isActive ? (
+          <Button label="Stop Timer" onPress={onStop} style={styles.actionBtn} />
+        ) : isActive && isRunning ? (
+          <>
+            <Button label="Pause" onPress={onPause} variant="outline" style={styles.actionBtn} />
+            <Button label="Cancel" onPress={onCancel} variant="ghost" style={styles.actionBtn} />
+          </>
+        ) : isPaused ? (
+          <>
+            <Button label="Resume" onPress={onResume} variant="secondary" style={styles.actionBtn} />
+            <Button label="Cancel" onPress={onCancel} variant="ghost" style={styles.actionBtn} />
+          </>
         ) : (
           <Button label="Start Timer" onPress={onStart} variant="secondary" style={styles.actionBtn} />
         )}
-        {isActive ? (
-          <Button label="Reset" onPress={onReset} variant="ghost" style={styles.actionBtn} />
-        ) : null}
       </View>
     </View>
   );
@@ -76,6 +137,45 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderWidth: 1,
     borderColor: '#FFD8A8',
+  },
+  containerAlert: {
+    borderColor: colors.primary,
+  },
+  finishedContainer: {
+    backgroundColor: '#ECFDF5',
+    borderColor: '#A7F3D0',
+  },
+  finishedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  finishedText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.success,
+  },
+  restartBtn: {
+    minHeight: 44,
+  },
+  completeBanner: {
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.sm,
+  },
+  completeTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: colors.primary,
+    textAlign: 'center',
+  },
+  completeSubtitle: {
+    fontSize: 13,
+    color: colors.textMuted,
+    lineHeight: 18,
+    textAlign: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -93,6 +193,10 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginVertical: spacing.sm,
     letterSpacing: 1,
+    textAlign: 'center',
+  },
+  timeAlert: {
+    color: colors.primary,
   },
   progressTrack: {
     height: 6,
@@ -105,6 +209,9 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: colors.primary,
     borderRadius: radius.full,
+  },
+  progressFillDone: {
+    backgroundColor: colors.success,
   },
   actions: {
     flexDirection: 'row',

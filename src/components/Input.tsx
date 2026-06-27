@@ -1,5 +1,7 @@
-import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -13,15 +15,40 @@ interface InputProps extends TextInputProps {
   error?: string;
 }
 
-export function Input({ label, error, style, ...props }: InputProps) {
+export function Input({ label, error, style, secureTextEntry, ...props }: InputProps) {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const isPassword = secureTextEntry === true;
+
   return (
     <View style={styles.wrapper}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
-        placeholderTextColor={colors.textMuted}
-        style={[styles.input, error ? styles.inputError : null, style]}
-        {...props}
-      />
+      <View style={styles.inputRow}>
+        <TextInput
+          placeholderTextColor={colors.textMuted}
+          style={[
+            styles.input,
+            isPassword && styles.inputWithToggle,
+            error ? styles.inputError : null,
+            style,
+          ]}
+          secureTextEntry={isPassword && !passwordVisible}
+          {...props}
+        />
+        {isPassword ? (
+          <Pressable
+            onPress={() => setPasswordVisible((visible) => !visible)}
+            style={styles.toggle}
+            accessibilityLabel={passwordVisible ? 'Hide password' : 'Show password'}
+            accessibilityRole="button"
+          >
+            <Ionicons
+              name={passwordVisible ? 'eye-off-outline' : 'eye-outline'}
+              size={22}
+              color={colors.textMuted}
+            />
+          </Pressable>
+        ) : null}
+      </View>
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
@@ -36,6 +63,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.text,
   },
+  inputRow: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
   input: {
     backgroundColor: colors.surface,
     borderWidth: 1,
@@ -45,6 +76,16 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
     color: colors.text,
+  },
+  inputWithToggle: {
+    paddingRight: 48,
+  },
+  toggle: {
+    position: 'absolute',
+    right: spacing.md,
+    height: '100%',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xs,
   },
   inputError: {
     borderColor: colors.error,

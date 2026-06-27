@@ -1,8 +1,8 @@
+import { Platform, ViewStyle } from 'react-native';
+
 export const colors = {
   primary: '#E85D04',
-  primaryDark: '#D00000',
   secondary: '#2D6A4F',
-  secondaryLight: '#40916C',
   background: '#FFF8F0',
   surface: '#FFFFFF',
   text: '#1A1A2E',
@@ -10,8 +10,6 @@ export const colors = {
   border: '#E5E7EB',
   error: '#DC2626',
   success: '#16A34A',
-  warning: '#F59E0B',
-  overlay: 'rgba(26, 26, 46, 0.45)',
 };
 
 export const spacing = {
@@ -30,19 +28,34 @@ export const radius = {
   full: 999,
 };
 
+function webShadow(boxShadow: string): ViewStyle {
+  return Platform.OS === 'web' ? ({ boxShadow } as ViewStyle) : {};
+}
+
+function nativeShadow(
+  shadowColor: string,
+  offsetY: number,
+  opacity: number,
+  radius: number,
+  elevation: number,
+): ViewStyle {
+  if (Platform.OS === 'web') return {};
+  return {
+    shadowColor,
+    shadowOffset: { width: 0, height: offsetY },
+    shadowOpacity: opacity,
+    shadowRadius: radius,
+    elevation,
+  };
+}
+
 export const shadows = {
   card: {
-    shadowColor: '#1A1A2E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    ...webShadow('0px 4px 12px rgba(26, 26, 46, 0.08)'),
+    ...nativeShadow('#1A1A2E', 4, 0.08, 12, 4),
   },
   bar: {
-    shadowColor: '#1A1A2E',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 8,
+    ...webShadow('0px -2px 8px rgba(26, 26, 46, 0.12)'),
+    ...nativeShadow('#1A1A2E', -2, 0.12, 8, 8),
   },
 };

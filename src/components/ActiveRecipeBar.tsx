@@ -1,25 +1,27 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, radius, shadows, spacing } from '../constants/theme';
 import { useRecipe } from '../context/RecipeContext';
-import { RootStackParamList } from '../navigation/types';
-
-function formatTime(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
+import { formatTime } from '../utils/formatTime';
 
 export function ActiveRecipeBar() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation();
   const { followSession, activeTimer, stopFollowing } = useRecipe();
 
   if (!followSession) return null;
+
+  const openFollowRecipe = () => {
+    const parent = navigation.getParent();
+    if (parent) {
+      parent.navigate('Main', { screen: 'FollowRecipe' });
+      return;
+    }
+    navigation.navigate('FollowRecipe' as never);
+  };
 
   const { recipe, currentStepIndex } = followSession;
   const currentStep = recipe.steps[currentStepIndex];
@@ -39,7 +41,7 @@ export function ActiveRecipeBar() {
 
   return (
     <Pressable
-      onPress={() => navigation.navigate('FollowRecipe')}
+      onPress={openFollowRecipe}
       style={[styles.container, { bottom: Math.max(insets.bottom, 12) }]}
     >
       <View style={styles.content}>
@@ -59,10 +61,21 @@ export function ActiveRecipeBar() {
             <Text style={styles.timer}>
               Timer running: {formatTime(activeTimer.remainingSeconds)}
             </Text>
+          ) : activeTimer?.awaitingStop ? (
+            <Text style={styles.timerAlert}>
+              Timer finished — tap Stop Timer
+            </Text>
           ) : null}
         </View>
 
-        <Pressable onPress={handleStop} hitSlop={12} style={styles.closeBtn}>
+        <Pressable
+          onPress={(event) => {
+            event.stopPropagation();
+            handleStop();
+          }}
+          hitSlop={12}
+          style={styles.closeBtn}
+        >
           <Ionicons name="close" size={20} color={colors.textMuted} />
         </Pressable>
       </View>
@@ -117,6 +130,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.primary,
+    marginTop: 2,
+  },
+  timerAlert: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.error,
     marginTop: 2,
   },
   closeBtn: {

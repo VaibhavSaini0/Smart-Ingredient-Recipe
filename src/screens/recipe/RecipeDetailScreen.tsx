@@ -2,13 +2,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Button } from '../components/Button';
-import { ScreenWrapper } from '../components/ScreenWrapper';
-import { colors, radius, shadows, spacing } from '../constants/theme';
-import { useRecipe } from '../context/RecipeContext';
-import { RootStackParamList } from '../navigation/types';
+import { Button } from '../../components/Button';
+import { ScreenWrapper } from '../../components/ScreenWrapper';
+import { colors, radius, shadows, spacing } from '../../constants/theme';
+import { useRecipe } from '../../context/RecipeContext';
+import { MainStackParamList } from '../../navigation/types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'RecipeDetail'>;
+type Props = NativeStackScreenProps<MainStackParamList, 'RecipeDetail'>;
 
 export function RecipeDetailScreen({ navigation }: Props) {
   const { latestRecipe, startFollowing, followSession } = useRecipe();
@@ -86,7 +86,9 @@ export function RecipeDetailScreen({ navigation }: Props) {
         <Button
           label={isFollowing ? 'Continue Following' : 'Follow This Recipe'}
           onPress={() => {
-            if (!isFollowing) startFollowing(recipe);
+            if (!isFollowing) {
+              startFollowing(recipe);
+            }
             navigation.navigate('FollowRecipe');
           }}
           style={styles.followBtn}

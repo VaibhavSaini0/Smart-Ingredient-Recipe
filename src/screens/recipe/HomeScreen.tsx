@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import {
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -10,14 +9,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Button } from '../components/Button';
-import { ScreenWrapper } from '../components/ScreenWrapper';
-import { colors, radius, shadows, spacing } from '../constants/theme';
-import { useAuth } from '../context/AuthContext';
-import { useRecipe } from '../context/RecipeContext';
-import { RootStackParamList } from '../navigation/types';
+import { Button } from '../../components/Button';
+import { DrawerMenuButton } from '../../components/DrawerMenuButton';
+import { ScreenWrapper } from '../../components/ScreenWrapper';
+import { colors, radius, shadows, spacing } from '../../constants/theme';
+import { useRecipe } from '../../context/RecipeContext';
+import { MainStackParamList } from '../../navigation/types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<MainStackParamList, 'Home'>;
 
 const SUGGESTIONS = [
   'chicken, broccoli, soy sauce, rice',
@@ -26,7 +25,6 @@ const SUGGESTIONS = [
 ];
 
 export function HomeScreen({ navigation }: Props) {
-  const { user, logout } = useAuth();
   const { generateRecipe, isGenerating, generateError, followSession } = useRecipe();
   const [ingredients, setIngredients] = useState('');
 
@@ -37,13 +35,6 @@ export function HomeScreen({ navigation }: Props) {
     }
   };
 
-  const handleLogout = () => {
-    Alert.alert('Log out?', 'You will need to sign in again.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Log out', style: 'destructive', onPress: logout },
-    ]);
-  };
-
   return (
     <ScreenWrapper bottomPadding={followSession ? 110 : 24}>
       <ScrollView
@@ -52,13 +43,11 @@ export function HomeScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.topBar}>
-          <View>
-            <Text style={styles.greeting}>Hello, {user?.name ?? 'Chef'} 👋</Text>
+          <DrawerMenuButton />
+          <View style={styles.topBarLeft}>
+            <Text style={styles.greeting}>Smart Ingredient</Text>
             <Text style={styles.subGreeting}>What ingredients do you have today?</Text>
           </View>
-          <Pressable onPress={handleLogout} style={styles.logoutBtn}>
-            <Ionicons name="log-out-outline" size={22} color={colors.textMuted} />
-          </Pressable>
         </View>
 
         <View style={styles.card}>
@@ -111,10 +100,10 @@ export function HomeScreen({ navigation }: Props) {
         <View style={styles.infoCard}>
           <Ionicons name="sparkles" size={20} color={colors.secondary} />
           <View style={styles.infoContent}>
-            <Text style={styles.infoTitle}>Frontend preview mode</Text>
+            <Text style={styles.infoTitle}>Powered by Google Gemini</Text>
             <Text style={styles.infoText}>
-              Recipe generation uses mock data for now. Backend + real AI integration
-              will be added in the next step.
+              Recipes are generated with AI and saved to your account. Open the
+              menu to view history or your profile.
             </Text>
           </View>
         </View>
@@ -130,8 +119,12 @@ const styles = StyleSheet.create({
   },
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
+    gap: spacing.md,
+  },
+  topBarLeft: {
+    flex: 1,
+    paddingRight: spacing.sm,
   },
   greeting: {
     fontSize: 24,
@@ -142,9 +135,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.textMuted,
     marginTop: 4,
-  },
-  logoutBtn: {
-    padding: spacing.sm,
   },
   card: {
     backgroundColor: colors.surface,

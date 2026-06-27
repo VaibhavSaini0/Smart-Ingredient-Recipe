@@ -17,7 +17,7 @@ export interface Recipe {
 export interface ActiveFollowSession {
   recipe: Recipe;
   currentStepIndex: number;
-  startedAt: number;
+  finishedTimerStepIds: string[];
 }
 
 export interface TimerState {
@@ -25,4 +25,5 @@ export interface TimerState {
   totalSeconds: number;
   remainingSeconds: number;
   isRunning: boolean;
+  awaitingStop: boolean;
 }
