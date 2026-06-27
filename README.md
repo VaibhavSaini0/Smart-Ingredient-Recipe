@@ -34,25 +34,14 @@ Pairs with the backend API in [`smart-ingredient-recipe-backend`](../smart-ingre
 ## Prerequisites
 
 - **Node.js** 20+
-- **Backend API** running — see [backend README](../smart-ingredient-recipe-backend/README.md)
 - **Expo Go** (SDK 54) on your phone, or Android/iOS emulator
+- **Backend API** — use the deployed Render instance (default) or run locally — see [backend README](../smart-ingredient-recipe-backend/README.md)
 
 ---
 
 ## Getting Started
 
-### 1. Start the backend
-
-```bash
-cd ../smart-ingredient-recipe-backend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-Backend should be running at `http://localhost:3000`.
-
-### 2. Install and configure the app
+### 1. Install and configure the app
 
 ```bash
 npm install
@@ -62,19 +51,23 @@ cp .env.example .env
 Edit `.env` and set `EXPO_PUBLIC_API_URL`:
 
 ```env
-# Physical phone (same Wi-Fi as your PC)
-EXPO_PUBLIC_API_URL=http://192.168.x.x:3000
+# Deployed backend (default — no local server needed)
+EXPO_PUBLIC_API_URL=https://smart-ingredient-recipe-backend.onrender.com
 
-# Web browser or emulator
+# Local backend — web/emulator only
 # EXPO_PUBLIC_API_URL=http://localhost:3000
 
-# Production
-# EXPO_PUBLIC_API_URL=https://your-api.vercel.app
+# Local backend — phone on same Wi-Fi (replace with your PC's LAN IP)
+# EXPO_PUBLIC_API_URL=http://192.168.x.x:3000
 ```
 
-Replace `192.168.x.x` with your computer's LAN IP (`ipconfig` on Windows, `ifconfig` on Mac/Linux).
+After changing `.env`, always restart Expo with a clean cache:
 
-### 3. Start Expo
+```bash
+npx expo start -c
+```
+
+### 2. Start Expo
 
 ```bash
 npm start
@@ -88,6 +81,19 @@ npx expo start -c
 
 Scan the QR code with **Expo Go** (Android) or the Camera app (iOS).
 
+### Local backend (optional)
+
+To run the API on your machine instead of Render:
+
+```bash
+cd ../smart-ingredient-recipe-backend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Then set `EXPO_PUBLIC_API_URL=http://localhost:3000` (web/emulator) or `http://<your-lan-ip>:3000` (phone) in `.env` and restart with `npx expo start -c`.
+
 ---
 
 ## Environment Variables
@@ -98,9 +104,9 @@ Scan the QR code with **Expo Go** (Android) or the Camera app (iOS).
 
 | Scenario | URL |
 |----------|-----|
-| Phone on Wi-Fi | `http://<your-pc-lan-ip>:3000` |
-| Web / emulator | `http://localhost:3000` |
-| Production | `https://your-api.vercel.app` |
+| Deployed backend (default) | `https://smart-ingredient-recipe-backend.onrender.com` |
+| Local — web / emulator | `http://localhost:3000` |
+| Local — phone on Wi-Fi | `http://<your-pc-lan-ip>:3000` |
 
 ---
 
@@ -151,8 +157,8 @@ smart-ingredient-recipe/
 
 ## Production Checklist
 
-- [ ] Deploy backend to Vercel with env vars set
-- [ ] Set `EXPO_PUBLIC_API_URL` to your HTTPS Vercel URL
+- [x] Backend deployed to Render — `https://smart-ingredient-recipe-backend.onrender.com`
+- [x] `EXPO_PUBLIC_API_URL` set in `eas.json` for EAS builds
 - [ ] Update `app.json` — Android package name / iOS bundle ID
 - [ ] Build with EAS: `npx eas build`
 - [ ] Never commit `.env` with real API keys
@@ -163,7 +169,9 @@ smart-ingredient-recipe/
 
 | Issue | Fix |
 |-------|-----|
-| Cannot reach server | Check backend is running; use LAN IP on phone |
+| Still hitting old LAN/local API URL | Kill stale Metro on port 8081, then `npx expo start -c` and hard-refresh the browser |
+| Cannot reach server | Confirm `EXPO_PUBLIC_API_URL` in `.env`; for local dev, check backend is running |
+| Render cold start slow | Free-tier Render spins down after inactivity — first request may take ~30s |
 | `EXPO_PUBLIC_API_URL is not set` | Create `.env` and restart with `npx expo start -c` |
 | Module not found errors | Clear Metro cache: `npx expo start -c` |
 | Recipe generation fails | Check backend logs; verify Gemini API key |
