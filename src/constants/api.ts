@@ -9,7 +9,11 @@ function getDefaultDevUrl(): string {
   return 'http://localhost:3000';
 }
 
-export const API_BASE_URL = envUrl || getDefaultDevUrl();
+export const API_BASE_URL = envUrl ;
+
+if (__DEV__) {
+  console.log('[API] Base URL:', API_BASE_URL);
+}
 
 if (__DEV__ && !envUrl) {
   console.warn(
